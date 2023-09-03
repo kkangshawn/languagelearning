@@ -1,0 +1,123 @@
+{% extends '_base.html' %}
+
+{% block title %}Deutsch Sätze{% endblock title %}
+{% block content %}
+<div class="row justify-content-around my-3">
+  <div class="col-4">
+    <h1>Deutsch Sätze</h1>
+  </div>
+  <div class="col-4">
+    <!-- Button trigger modal -->
+    {% if g.user %}
+      <button type="button" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addPhraseModal">Hinzufügen</button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="addPhraseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addPhraseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addPhraseModalLabel">Satz hinzufügen</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('posts.insert') }}" method="post">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="phrase" class="col-form-label">Satz:</label>
+                  <input type="text" class="form-control" name="phrase" required>
+                </div>
+                <div class="mb-3">
+                  <label for="meaning" class="col-form-label">Übersetzung:</label>
+                  <input type="text" class="form-control" name="meaning">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                <button type="submit" class="btn btn-primary">Sichern</button>
+            </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="accordion" id="accordionExample">
+  {% for item in phrases %}
+  <div class="accordion-item">
+    <h2 class="accordion-header">
+      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ loop.index0 }}" aria-expanded="false" aria-controls="collapse{{ loop.index0 }}">
+        {{ item['phrase'] }}
+      </button>
+    </h2>
+    <div id="collapse{{ loop.index0 }}" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+      <div class="accordion-body row justify-content-between">
+        <div class="col-auto">
+          <strong>{{ item['meaning'] }}</strong>
+        </div>
+
+        {% if g.user['username'] == item['author'] or g.user['admin'] == True %}
+          <div class="col-auto">
+            <button type="button" class="btn btn-sm btn-warning mt-1" data-bs-toggle="modal" data-bs-target="#modifyPhraseModal{{ loop.index0 }}">Bearbeiten</button>
+            <button type="button" class="btn btn-sm btn-danger mt-1" data-bs-toggle="modal" data-bs-target="#deletePhraseModal{{ loop.index0 }}">Löschen</button>
+          </div>
+
+          <div class="modal fade" id="modifyPhraseModal{{ loop.index0 }}" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyPhraseModalLabel{{ loop.index0 }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="modifyPhraseModalLabel{{ loop.index0 }}">Satz bearbeiten</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <form action="{{ url_for('posts.modify', id=item['_id']) }}" method="post">
+                    <div class="mb-3">
+                      <label for="modifyPhrase" class="col-form-label">Satz:</label>
+                      <input type="text" class="form-control" id="modifyPhrase" name="phrase" value="{{ item['phrase'] }}" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="modifyMeaning" class="col-form-label">Übersetzung:</label>
+                      <input type="text" class="form-control" id="modifyMeaning" name="meaning" value="{{ item['meaning'] }}">
+                    </div>
+                </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                      <button type="submit" class="btn btn-warning">Bearbeiten</button>
+                    </div>
+                  </form>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal fade" id="deletePhraseModal{{ loop.index0 }}" tabindex="-1" aria-labelledby="deletePhraseModalLabel{{ loop.index0 }}" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="deletePhraseModalLabel{{ loop.index0 }}">Satz löschen</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Bist Du sicher?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Abbrechen</button>
+                  <form action="{{ url_for('posts.delete', id=item['_id']) }}" method="post">
+                    <button type="submit" class="btn btn-danger">Löschen</button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% else %}
+        <p class="fst-italic col-auto">
+          by {{ item['author'] }}
+        </p>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+{% endblock content %}
