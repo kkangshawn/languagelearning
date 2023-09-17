@@ -43,7 +43,7 @@ def login():
     if error is not None:
         flash(error)
 
-    return redirect(url_for('index'))
+    return redirect(request.referrer)
 
 @bp.before_app_request
 def load_logged_in_user():
@@ -57,12 +57,12 @@ def load_logged_in_user():
 @bp.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(request.referrer)
 
 def login_required(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
-            return redirect(url_for('index'))
+            return redirect(request.referrer)
         return view(**kwargs)
     return wrapped_view

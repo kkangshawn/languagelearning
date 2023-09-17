@@ -11,6 +11,9 @@ def create_app():
 
     from . import posts
     app.register_blueprint(posts.bp)
-    app.add_url_rule('/', endpoint='index')
+    app.add_url_rule('/', endpoint='index_posts')
+
+    from . import wordbook
+    app.register_blueprint(wordbook.bp)
 
     return app

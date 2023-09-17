@@ -1,0 +1,160 @@
+{% extends "_base.html" %}
+
+{% block extraCSS %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+<link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block title %} Flashcards | LanguageLearning {% endblock %}
+
+{% block content %}
+  <div class="container px-4 py-5" id="custom-cards">
+    <h2 class="pb-2 border-bottom">Flashcards | Leitner system </h2>
+
+    <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 py-4">
+      <div class="col-lg-4">
+        <h1 class="display-5 fw-bold text-body-emphasis lh-1 mb-3">Method</h1>
+        <p class="lead">In the Leitner system, correctly answered cards are advanced to the next, less frequent box, while incorrectly answered cards return to the first box.</p>
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start">
+          {% if g.user %}
+            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Add a word</button>
+            <button type="button" class="btn btn-warning btn-lg px-4">Wordlist</button>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-1.jpg') }});min-height: 300px;background-size: cover;">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+            <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 1:</a>
+            </h3>
+            <h3 class="mb-4 display-8 lh-1 fw-bold text-success">very new</h3>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="d-flex align-items-center">
+                <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
+                {% if g.user %}
+                  <small>36</small>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-2.jpg') }});min-height: 300px;background-size: cover;">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+            <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 2:</a>
+            </h3>
+            <h3 class="mb-4 display-8 lh-1 fw-bold text-dark">uncertain</h3>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="d-flex align-items-center">
+                <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
+                {% if g.user %}
+                  <small>31</small>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-lg-3 align-items-stretch g-4 ">
+      <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-3.jpg') }});background-size: cover;">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
+            <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 3:</a>
+            </h3>
+            <h3 class="mb-4 display-8 lh-1 fw-bold text-info">memorizing</h3>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="d-flex align-items-center">
+                <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
+                {% if g.user %}
+                  <small>11</small>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-4.jpg') }});background-size: cover;">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
+            <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 4:</a>
+            </h3>
+            <h3 class="mb-4 display-8 lh-1 fw-bold text-warning">familiar</h3>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="d-flex align-items-center">
+                <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
+                {% if g.user %}
+                  <small>14</small>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-5.jpg') }});background-size: cover;">
+          <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
+            <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 5:</a>
+            </h3>
+            <h3 class="mb-4 display-8 lh-1 fw-bold text-danger">know well</h3>
+            <ul class="d-flex list-unstyled mt-auto">
+              <li class="d-flex align-items-center">
+                <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
+                {% if g.user %}
+                  <small>24</small>
+                {% endif %}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal content -->
+  <div class="modal fade modal-sheet p-4 py-md-5" tabindex="-1" role="dialog" id="modalWordcard" aria-labelledby="modalWordcardLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content rounded-3 shadow">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="modalWordcardLabel">Level 2</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        {% if g.user %}
+          <div class="modal-body p-4 text-center">
+            <h5 class="mb-0">Do you know this word?</h5>
+            <p class="mb-0">Hold the card to verify weather or not what you know is correct.</p>
+            <div class="flip-card mx-auto my-3">
+              <div class="flip-card-inner prevent-select">
+                <div class="flip-card-front d-flex align-items-center justify-content-center">
+                  <h1>das Wort</h1>
+                </div>
+                <div class="flip-card-back d-flex align-items-center justify-content-center">
+                  <h1>word</h1>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer flex-nowrap p-0">
+            <button type="button" class="btn btn-lg btn-danger fs-6 col-6 py-3 m-0 rounded-0 border-end" data-bs-dismiss="modal"><i class="bi-hand-thumbs-down-fill fs-5"></i></button>
+            <button type="button" class="btn btn-lg btn-success fs-6 col-6 py-3 m-0 rounded-0" data-bs-dismiss="modal"><i class="bi-hand-thumbs-up-fill fs-5"></i></button>
+          </div>
+        {% else %}
+          <div class="modal-body p-4 text-center text-bg-danger">
+            <h5 class="mb-0">Login required.</h5>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
