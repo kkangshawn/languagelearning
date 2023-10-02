@@ -17,17 +17,194 @@
         <p class="lead">In the Leitner system, correctly answered cards are advanced to the next, less frequent box, while incorrectly answered cards return to the first box.</p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
           {% if g.user %}
-            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2">Add a word</button>
-            <button type="button" class="btn btn-warning btn-lg px-4">Wordlist</button>
+            <button type="button" class="btn btn-primary btn-lg px-4 me-md-2" data-bs-toggle="modal" data-bs-target="#addWordModal">Add a word</button>
+            <button type="button" class="btn btn-warning btn-lg px-4" data-bs-toggle="modal" data-bs-target="#listWordModal">Wordlist</button>
           {% endif %}
+
         </div>
       </div>
 
+      <!-- Modal -->
+      <div class="modal fade" id="addWordModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addWordModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="addWordModalLabel">Add a word</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="{{ url_for('wordbook.insert') }}" method="post">
+              <div class="modal-body">
+                <div class="mb-3">
+                  <label for="word" class="col-form-label">Word:</label>
+                  <input type="text" class="form-control" name="word" id="word" required>
+                </div>
+                <div class="mb-3">
+                  <label for="meaning" class="col-form-label">Meaning:</label>
+                  <input type="text" class="form-control" name="meaning" id="meaning">
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal fade" id="modifyWordModalToggle" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="modifyWordModalToggleLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="modifyWordModalToggleLabel">Modify a word</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form method="post" id="modifyForm">
+                <div class="mb-3">
+                  <label for="modifyWord" class="col-form-label">Word:</label>
+                  <input type="text" class="form-control" id="modifyWord" name="word" required>
+                </div>
+                <div class="mb-3">
+                  <label for="modifyMeaning" class="col-form-label">Meaning:</label>
+                  <input type="text" class="form-control" id="modifyMeaning" name="meaning">
+                </div>
+                <div class="list-group list-group-checkable d-grid gap-2 border-0 w-auto">
+                  <input class="list-group-item-check pe-none" type="radio" name="level" id="listGroupCheckableRadios1" value="1">
+                  <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios1">
+                    Level 1
+                    <span class="d-block small opacity-50">very new</span>
+                  </label>
+                  <input class="list-group-item-check pe-none" type="radio" name="level" id="listGroupCheckableRadios2" value="2">
+                  <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios2">
+                    Level 2
+                    <span class="d-block small opacity-50">uncertain</span>
+                  </label>
+                  <input class="list-group-item-check pe-none" type="radio" name="level" id="listGroupCheckableRadios3" value="3">
+                  <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios3">
+                    Level 3
+                    <span class="d-block small opacity-50">memorizing</span>
+                  </label>
+                  <input class="list-group-item-check pe-none" type="radio" name="level" id="listGroupCheckableRadios4" value="4">
+                  <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios4">
+                    Level 4
+                    <span class="d-block small opacity-50">familiar</span>
+                  </label>
+                  <input class="list-group-item-check pe-none" type="radio" name="level" id="listGroupCheckableRadios5" value="5">
+                  <label class="list-group-item rounded-3 py-3" for="listGroupCheckableRadios5">
+                    Level 5
+                    <span class="d-block small opacity-50">know well</span>
+                  </label>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" form="modifyForm" class="btn btn-warning">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        const modifyWordModal = document.getElementById('modifyWordModalToggle')
+        modifyWordModal.addEventListener('show.bs.modal', event => {
+          const button = event.relatedTarget
+          const id = button.getAttribute('data-bs-id')
+          const word = button.getAttribute('data-bs-word')
+          const meaning = button.getAttribute('data-bs-meaning')
+          const level = button.getAttribute('data-bs-level')
+
+          const modalBodyInputWord = modifyWordModal.querySelector('.modal-body input#modifyWord')
+          modalBodyInputWord.value = word
+          const modalBodyInputMeaning = modifyWordModal.querySelector('.modal-body input#modifyMeaning')
+          modalBodyInputMeaning.value = meaning
+          const modalBodyInputLevel = modifyWordModal.querySelector(`.modal-body input#listGroupCheckableRadios${level}`)
+          modalBodyInputLevel.checked = true
+          document.getElementById('modifyForm').action = `${id}/modify`
+        })
+      </script>
+
+      <div class="modal fade" id="deleteWordModalToggle" tabindex="-1" aria-labelledby="deleteWordModalToggleLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteWordModalToggleLabel">Delete a word</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <form method="post" id="deleteForm">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="text/javascript">
+        const deleteWordModal = document.getElementById('deleteWordModalToggle')
+        deleteWordModal.addEventListener('show.bs.modal', event => {
+          const button = event.relatedTarget
+          const id = button.getAttribute('data-bs-id')
+          const word = button.getAttribute('data-bs-word')
+          const meaning = button.getAttribute('data-bs-meaning')
+          const modalBody = deleteWordModal.querySelector('.modal-body')
+          modalBody.innerHTML = `Are you sure to delete <strong><i>${word}</i></strong> ?`
+          document.getElementById('deleteForm').action = `${id}/delete`
+        })
+      </script>
+
+      <div class="modal fade" id="listWordModal" tabindex="-1" aria-labelledby="listWordModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="listWordModalLabel">Wordlist</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <table class="table table-sm table-striped table-hover align-middle">
+                <thead>
+                  <tr>
+                    <th scope="col">Word</th>
+                    <th scope="col">Meaning</th>
+                    <th scope="col" class="text-center">Level</th>
+                    <th scope="col w-25"></th>
+                  </tr>
+                </thead>
+                <tbody class="table-group-divider">
+                  {% if words %}
+                  {% for item in words %}
+                  <tr>
+                    <td>{{ item['word'] }}</td>
+                    <td>{{ item['meaning'] }}</td>
+                    <td class="text-center">{{ item['level'] }}</td>
+                    <td class="text-center">
+                      <div class="col-auto">
+                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#modifyWordModalToggle" data-bs-id="{{ item['_id'] }}" data-bs-word="{{ item['word'] }}" data-bs-meaning="{{ item['meaning'] }}" data-bs-level="{{ item['level'] }}">Modify</button>
+                        <button type="button" class="btn btn-sm btn-danger mt-1 mt-lg-0" data-bs-toggle="modal" data-bs-target="#deleteWordModalToggle" data-bs-id="{{ item['_id'] }}" data-bs-word="{{ item['word'] }}" data-bs-meaning="{{ item['meaning'] }}">Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+              <button type="submit" class="btn btn-primary">Save</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cardsets -->
       <div class="col">
         <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-1.jpg') }});min-height: 300px;background-size: cover;">
           <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
             <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
-              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 1:</a>
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard" data-bs-level="1">Cardset 1:</a>
             </h3>
             <h3 class="mb-4 display-8 lh-1 fw-bold text-success">very new</h3>
             <ul class="d-flex list-unstyled mt-auto">
@@ -46,7 +223,7 @@
         <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-2.jpg') }});min-height: 300px;background-size: cover;">
           <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
             <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
-              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 2:</a>
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard" data-bs-level="2">Cardset 2:</a>
             </h3>
             <h3 class="mb-4 display-8 lh-1 fw-bold text-dark">uncertain</h3>
             <ul class="d-flex list-unstyled mt-auto">
@@ -66,7 +243,7 @@
         <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-3.jpg') }});background-size: cover;">
           <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
             <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
-              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 3:</a>
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard" data-bs-level="3">Cardset 3:</a>
             </h3>
             <h3 class="mb-4 display-8 lh-1 fw-bold text-info">memorizing</h3>
             <ul class="d-flex list-unstyled mt-auto">
@@ -85,7 +262,7 @@
         <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-4.jpg') }});background-size: cover;">
           <div class="d-flex flex-column h-100 p-5 pb-3 text-white text-shadow-1">
             <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
-              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 4:</a>
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard" data-bs-level="4">Cardset 4:</a>
             </h3>
             <h3 class="mb-4 display-8 lh-1 fw-bold text-warning">familiar</h3>
             <ul class="d-flex list-unstyled mt-auto">
@@ -104,7 +281,7 @@
         <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url({{ url_for('static', filename='unsplash-photo-5.jpg') }});background-size: cover;">
           <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
             <h3 class="pt-5 mt-5 display-6 lh-1 fw-bold">
-              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard">Cardset 5:</a>
+              <a href="#" class="icon-link gap-1 icon-link-hover stretched-link text-decoration-none link-light" data-bs-toggle="modal" data-bs-target="#modalWordcard" data-bs-level="5">Cardset 5:</a>
             </h3>
             <h3 class="mb-4 display-8 lh-1 fw-bold text-danger">know well</h3>
             <ul class="d-flex list-unstyled mt-auto">
@@ -136,10 +313,10 @@
             <div class="flip-card mx-auto my-3">
               <div class="flip-card-inner prevent-select">
                 <div class="flip-card-front d-flex align-items-center justify-content-center">
-                  <h1>das Wort</h1>
+                  <h1 class="word-front">das Wort</h1>
                 </div>
                 <div class="flip-card-back d-flex align-items-center justify-content-center">
-                  <h1>word</h1>
+                  <h1 class="word-back">word</h1>
                 </div>
               </div>
             </div>
@@ -156,5 +333,18 @@
       </div>
     </div>
   </div>
+  <script type="text/javascript">
+    const wordcardModal = document.getElementById('modalWordcard')
+    wordcardModal.addEventListener('show.bs.modal', event => {
+      const button = event.relatedTarget
+      const level = button.getAttribute('data-bs-level')
+      const title = wordcardModal.querySelector('.modal-title')
+      title.textContent = `Level ${level}`
+      const word = wordcardModal.querySelector('.word-front')
+      word.textContent = 'TEST!'
+      const meaning = wordcardModal.querySelector('.word-back')
+      meaning.textContent = 'MEAN...'
+    })
+  </script>
 
 {% endblock %}

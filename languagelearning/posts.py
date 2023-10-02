@@ -7,7 +7,7 @@ from .auth import login_required
 bp = Blueprint('posts', __name__)
 
 @bp.route('/')
-def index_posts():
+def index():
     g.posts = "active"
     g.wordbook = ""
     phrases = get_collection(Collections.GERMAN_PHRASES).find().sort("_id", -1)
@@ -31,7 +31,7 @@ def insert():
             "author" : g.user['username']
             })
         print("added by " + g.user['username'])
-    return redirect(url_for('index_posts'))
+    return redirect(url_for('posts.index'))
 
 @bp.route('/<id>/delete', methods=['POST'])
 @login_required
@@ -40,7 +40,7 @@ def delete(id):
     collection.delete_one({
         "_id" : ObjectId(id)
         })
-    return redirect(url_for('index_posts'))
+    return redirect(url_for('posts.index'))
 
 @bp.route('/<id>/modify', methods=['POST'])
 @login_required
@@ -62,4 +62,4 @@ def modify(id):
                 "meaning" : meaning
             }
         })
-    return redirect(url_for('index_posts'))
+    return redirect(url_for('posts.index'))
