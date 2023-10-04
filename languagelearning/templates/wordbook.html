@@ -3,6 +3,10 @@
 {% block extraCSS %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+{% endblock %}
+{% block extraJS %}
+<script src="{{ url_for('static', filename='modalControl.js') }}" type="text/javascript" language="javascript"></script>
 {% endblock %}
 
 {% block title %} Flashcards | LanguageLearning {% endblock %}
@@ -105,24 +109,6 @@
           </div>
         </div>
       </div>
-      <script type="text/javascript">
-        const modifyWordModal = document.getElementById('modifyWordModalToggle')
-        modifyWordModal.addEventListener('show.bs.modal', event => {
-          const button = event.relatedTarget
-          const id = button.getAttribute('data-bs-id')
-          const word = button.getAttribute('data-bs-word')
-          const meaning = button.getAttribute('data-bs-meaning')
-          const level = button.getAttribute('data-bs-level')
-
-          const modalBodyInputWord = modifyWordModal.querySelector('.modal-body input#modifyWord')
-          modalBodyInputWord.value = word
-          const modalBodyInputMeaning = modifyWordModal.querySelector('.modal-body input#modifyMeaning')
-          modalBodyInputMeaning.value = meaning
-          const modalBodyInputLevel = modifyWordModal.querySelector(`.modal-body input#listGroupCheckableRadios${level}`)
-          modalBodyInputLevel.checked = true
-          document.getElementById('modifyForm').action = `${id}/modify`
-        })
-      </script>
 
       <div class="modal fade" id="deleteWordModalToggle" tabindex="-1" aria-labelledby="deleteWordModalToggleLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -142,18 +128,6 @@
           </div>
         </div>
       </div>
-      <script type="text/javascript">
-        const deleteWordModal = document.getElementById('deleteWordModalToggle')
-        deleteWordModal.addEventListener('show.bs.modal', event => {
-          const button = event.relatedTarget
-          const id = button.getAttribute('data-bs-id')
-          const word = button.getAttribute('data-bs-word')
-          const meaning = button.getAttribute('data-bs-meaning')
-          const modalBody = deleteWordModal.querySelector('.modal-body')
-          modalBody.innerHTML = `Are you sure to delete <strong><i>${word}</i></strong> ?`
-          document.getElementById('deleteForm').action = `${id}/delete`
-        })
-      </script>
 
       <div class="modal fade" id="listWordModal" tabindex="-1" aria-labelledby="listWordModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable modal-lg">
@@ -211,7 +185,7 @@
               <li class="d-flex align-items-center">
                 <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
                 {% if g.user %}
-                  <small>36</small>
+                  <small>{{ cardqty[1] }}</small>
                 {% endif %}
               </li>
             </ul>
@@ -230,7 +204,7 @@
               <li class="d-flex align-items-center">
                 <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
                 {% if g.user %}
-                  <small>31</small>
+                  <small>{{ cardqty[2] }}</small>
                 {% endif %}
               </li>
             </ul>
@@ -250,7 +224,7 @@
               <li class="d-flex align-items-center">
                 <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
                 {% if g.user %}
-                  <small>11</small>
+                  <small>{{ cardqty[3] }}</small>
                 {% endif %}
               </li>
             </ul>
@@ -269,7 +243,7 @@
               <li class="d-flex align-items-center">
                 <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
                 {% if g.user %}
-                  <small>14</small>
+                  <small>{{ cardqty[4] }}</small>
                 {% endif %}
               </li>
             </ul>
@@ -288,7 +262,7 @@
               <li class="d-flex align-items-center">
                 <i class="bi-card-checklist me-2" width="1em" height="1em"></i>
                 {% if g.user %}
-                  <small>24</small>
+                  <small>{{ cardqty[5] }}</small>
                 {% endif %}
               </li>
             </ul>
@@ -309,21 +283,21 @@
         {% if g.user %}
           <div class="modal-body p-4 text-center">
             <h5 class="mb-0">Do you know this word?</h5>
-            <p class="mb-0">Hold the card to verify weather or not what you know is correct.</p>
+            <p class="mb-0">Click the card to verify weather or not what you know is correct.</p>
             <div class="flip-card mx-auto my-3">
               <div class="flip-card-inner prevent-select">
                 <div class="flip-card-front d-flex align-items-center justify-content-center">
-                  <h1 class="word-front">das Wort</h1>
+                  <h1 class="word-front">Error</h1>
                 </div>
                 <div class="flip-card-back d-flex align-items-center justify-content-center">
-                  <h1 class="word-back">word</h1>
+                  <h1 class="word-back">Happened</h1>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer flex-nowrap p-0">
-            <button type="button" class="btn btn-lg btn-danger fs-6 col-6 py-3 m-0 rounded-0 border-end" data-bs-dismiss="modal"><i class="bi-hand-thumbs-down-fill fs-5"></i></button>
-            <button type="button" class="btn btn-lg btn-success fs-6 col-6 py-3 m-0 rounded-0" data-bs-dismiss="modal"><i class="bi-hand-thumbs-up-fill fs-5"></i></button>
+            <button type="button" class="btn btn-lg btn-danger fs-6 col-6 py-3 m-0 rounded-0 border-end" id="buttonDown" value="-1"><i class="bi-hand-thumbs-down-fill fs-5"></i></button>
+            <button type="button" class="btn btn-lg btn-success fs-6 col-6 py-3 m-0 rounded-0" id="buttonUp" value="+1"><i class="bi-hand-thumbs-up-fill fs-5"></i></button>
           </div>
         {% else %}
           <div class="modal-body p-4 text-center text-bg-danger">
@@ -335,16 +309,86 @@
   </div>
   <script type="text/javascript">
     const wordcardModal = document.getElementById('modalWordcard')
+    const bodyContent = wordcardModal.querySelector('.modal-body')
+    const originalBodyContent = bodyContent.innerHTML
+    {% if g.user %}
+    const footer = wordcardModal.querySelector('.modal-footer')
+    const originalFooter = footer.innerHTML
+    {% endif %}
+    let id = ""
+    let level = 0
+    let modified = false
+    const cardsets = {{ cardsets|tojson }}
+    const qty = {{ cardqty }}
+    let cardnum = 0
+    let cancelPromise = false
+
     wordcardModal.addEventListener('show.bs.modal', event => {
       const button = event.relatedTarget
-      const level = button.getAttribute('data-bs-level')
+      level = button.getAttribute('data-bs-level')
       const title = wordcardModal.querySelector('.modal-title')
       title.textContent = `Level ${level}`
-      const word = wordcardModal.querySelector('.word-front')
-      word.textContent = 'TEST!'
-      const meaning = wordcardModal.querySelector('.word-back')
-      meaning.textContent = 'MEAN...'
+
+      if (qty[level] == 0) {
+        bodyContent.innerHTML = "Card is empty. Add more words in this level."
+        footer.innerHTML = ""
+        closeModal()
+      } else {
+        bodyContent.innerHTML = originalBodyContent
+        {% if g.user %}
+        footer.innerHTML = originalFooter
+        const word = wordcardModal.querySelector('.word-front')
+        const meaning = wordcardModal.querySelector('.word-back')
+        word.textContent = cardsets[level][0]['word']
+        meaning.textContent = cardsets[level][0]['meaning']
+        id = cardsets[level][0]['_id']
+        {% endif %}
+      }
     })
+    wordcardModal.addEventListener('hide.bs.modal', event => {
+      cardnum = 0
+      cancelPromise = true
+      if (modified == true) {
+        window.location.replace("{{ url_for('wordbook.index') }}")
+        modified = false
+      }
+    })
+
+    $(document).on("click", "#buttonUp, #buttonDown", function(e) {
+      e.preventDefault()
+      $.ajax({
+        type: "POST",
+        url: "{{ url_for('wordbook.levelChange') }}",
+        data: {
+          id: id,
+          level: level,
+          updown: $(this).val(),
+        }
+      })
+      modified = true
+      cardnum += 1
+      if (cardnum < qty[level]) {
+        const word = wordcardModal.querySelector('.word-front')
+        const meaning = wordcardModal.querySelector('.word-back')
+        word.textContent = cardsets[level][cardnum]['word']
+        meaning.textContent = cardsets[level][cardnum]['meaning']
+        id = cardsets[level][cardnum]['_id']
+      } else {
+        bodyContent.innerHTML = "Card is empty. Add more words in this level."
+        footer.innerHTML = ""
+        closeModal()
+      }
+    })
+
+    async function closeModal() {
+      await new Promise(resolve => setTimeout(resolve, 3000))
+      if (cancelPromise == false) {
+        let modal = bootstrap.Modal.getInstance(wordcardModal)
+        modal.hide()
+      } else {
+        cancelPromise = false
+      }
+    }
   </script>
 
 {% endblock %}

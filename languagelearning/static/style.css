@@ -18,7 +18,7 @@
   }
   
   /* Do an horizontal flip when you move the mouse over the flip box container */
-  .flip-card:active .flip-card-inner {
+  .flip-card.flip .flip-card-inner {
     transform: rotateY(180deg);
   }
   
@@ -35,6 +35,7 @@
   .flip-card-front {
     background-color: #baceb0;
     color: gray;
+    transform: rotateY(0deg);
   }
   
   /* Style the back side */
