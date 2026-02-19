@@ -92,16 +92,20 @@ def modify(id):
 @login_required
 def levelChange():
     id = request.form['id']
-    level = int(request.form['level']) + int(request.form['updown'])
+    original_level = int(request.form['level'])
+    new_level = original_level + int(request.form['updown'])
     
-    if 0 < level < 6:
-        global collection
-        if collection is None:
-            collection = get_collection(Collections.GERMAN_WORDS)
-        item = collection.find_one_and_delete({
-        "_id" : ObjectId(id)
-        })
-        item['level'] = level
-        collection.insert_one(item)
+    # If trying to go outside the range, keep the original level but move card to back
+    if new_level <= 0 or new_level >= 6:
+        new_level = original_level
+    
+    global collection
+    if collection is None:
+        collection = get_collection(Collections.GERMAN_WORDS)
+    item = collection.find_one_and_delete({
+    "_id" : ObjectId(id)
+    })
+    item['level'] = new_level
+    collection.insert_one(item)
 
     return jsonify({'status': 'OK'})
