@@ -1,6 +1,7 @@
 from pymongo import MongoClient
 import os
 from enum import Enum
+import certifi
 
 class Collections(str, Enum):
     GERMAN_PHRASES = "german_phrases"
@@ -10,7 +11,8 @@ class Collections(str, Enum):
     
 def get_db():
     CONNECTION_STRING = os.environ['MONGODB_URI']
-    client = MongoClient(CONNECTION_STRING)
+    ca = certifi.where()
+    client = MongoClient(CONNECTION_STRING, tlsCAFile=ca)
     try:
         client.admin.command('ping')
     except Exception as e:
