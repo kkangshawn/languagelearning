@@ -137,7 +137,10 @@
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-              <table class="table table-sm table-striped table-hover align-middle">
+              <div class="mb-3">
+                <input type="search" class="form-control" id="wordSearch" placeholder="Search word or meaning">
+              </div>
+              <table class="table table-sm table-striped table-hover align-middle" id="wordListTable">
                 <thead>
                   <tr>
                     <th scope="col">Word</th>
@@ -389,6 +392,37 @@
         cancelPromise = false
       }
     }
+    
+    // Live search for wordlist modal
+    (function() {
+      const listModal = document.getElementById('listWordModal')
+      const searchInput = document.getElementById('wordSearch')
+      const table = document.getElementById('wordListTable')
+      if (!searchInput || !table) return
+
+      // When modal opens, focus search and reset
+      listModal.addEventListener('show.bs.modal', () => {
+        searchInput.value = ''
+        filterRows('')
+        setTimeout(() => searchInput.focus(), 50)
+      })
+
+      searchInput.addEventListener('input', (e) => {
+        filterRows(e.target.value)
+      })
+
+      function filterRows(query) {
+        const q = query.trim().toLowerCase()
+        const rows = table.tBodies[0].rows
+        for (let i = 0; i < rows.length; i++) {
+          const cells = rows[i].cells
+          const word = (cells[0] && cells[0].textContent || '').toLowerCase()
+          const meaning = (cells[1] && cells[1].textContent || '').toLowerCase()
+          const match = q === '' || word.indexOf(q) !== -1 || meaning.indexOf(q) !== -1
+          rows[i].style.display = match ? '' : 'none'
+        }
+      }
+    })()
   </script>
 
 {% endblock %}
