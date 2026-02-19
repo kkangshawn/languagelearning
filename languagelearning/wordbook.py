@@ -43,12 +43,23 @@ def insert():
         global collection
         if collection is None:
             collection = get_collection(Collections.GERMAN_WORDS)
-        collection.insert_one({
-            "word" : word,
-            "meaning" : meaning,
-            "level" : 1,
-            "author" : g.user['username']
-            })
+        
+        # Check if word already exists for this user
+        existing_word = collection.find_one({
+            "word": word,
+            "author": g.user['username']
+        })
+        
+        if existing_word:
+            error = 'This word already exists.'
+            flash(error)
+        else:
+            collection.insert_one({
+                "word" : word,
+                "meaning" : meaning,
+                "level" : 1,
+                "author" : g.user['username']
+                })
     return redirect(url_for('wordbook.index'))
 
 @bp.route('/<id>/delete', methods=['POST'])
