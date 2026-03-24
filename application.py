@@ -8,7 +8,10 @@ logger = logging.getLogger("LanguageLearningApp")
 
 logger.info("--- Starting application... ---")
 try:
-    app = Flask(__name__)
+    app_root = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'languagelearning')
+    app = Flask(__name__, 
+                template_folder=os.path.join(app_root, 'templates'),
+                static_folder=os.path.join(app_root, 'static'))
     app.secret_key = "dev"
 
     app.config.from_prefixed_env()
